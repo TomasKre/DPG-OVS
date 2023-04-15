@@ -54,6 +54,18 @@ app.get('/results', (req, res) => {
   return res.send(counts);
 });
 
+// Check if token is valid
+app.get('/tokens', (req, res) => {
+  let tokensjson = fs.readFileSync("tokens.json");
+  tokens = JSON.parse(tokensjson);
+  for (var i in tokens) {
+    if (tokens[i]["token"] == req.body.token) {
+      return res.send(true);
+    }
+  }
+  return res.send(false);
+});
+
 // Start the server
 const port = 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
