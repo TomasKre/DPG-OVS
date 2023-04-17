@@ -38,7 +38,7 @@
   <script>
     async function submitVote() {
       const option = document.querySelector('input[name="option"]:checked').value;
-      const response = await fetch("http://localhost:3000/vote", {
+      const response = await fetch(`http://${window.location.host}/vote`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@
     }
 
     async function getResults() {
-      const response = await fetch("http://localhost:3000/results", {
+      const response = await fetch(`http://${window.location.host}/results`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@
 
     async function checkToken() {
       const tokenInput = document.getElementById('tokenInput').value;
-      const response = await fetch("http://localhost:3000/tokens?" + new URLSearchParams({
+      const response = await fetch(`http://${window.location.host}/tokens?` + new URLSearchParams({
           token: tokenInput
         }), {
         method: "GET",
