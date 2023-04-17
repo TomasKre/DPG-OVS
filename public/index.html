@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <title>Online Voting System</title>
+</head>
+<body>
+  <h1>Online Voting System</h1>
+  <div id="login">
+    <h1>Login</h1>
+    <form>
+      <div id="token" style="display: none;"></div>
+      <label for="tokenInput">Token: </label><input type="text" id="tokenInput" name="token"><br><br>
+      <input type="button" value="Login" onclick="checkToken()">
+    </form>
+  </div>
+  <div id="vote" style="display: none;">
+    <h2>Options:</h2>
+    <form id="voting">
+      <label>
+        <input type="radio" name="option" value="cucumber">
+        Okurka
+      </label><br>
+      <label>
+        <input type="radio" name="option" value="cactus">
+        Kaktus
+      </label><br>
+      <label>
+        <input type="radio" name="option" value="idk">
+        Já ňevjém uš
+      </label><br>
+      <input type="button" value="Submit" onclick="submitVote()">
+    </form>
+    <br>
+    <input type="button" value="See Results" onclick="getResults()">
+    <div id="results"></div>
+  </div>
+
+  <script>
+    async function submitVote() {
+      const option = document.querySelector('input[name="option"]:checked').value;
+      const response = await fetch("http://localhost:3000/vote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({option: option}),
+      });
+      const result = await response;
+      if (result.status === 200) {
+        console.log("POST Submit Success:", result);
+        alert("Vote submitted!");
+      } else if (result.status === 400) {
+        console.log("POST Submit Error:", result);
+        alert("You have already voted!");
+      } else {
+        console.log("POST Submit Error:", result);
+        alert("Something went wrong!");
+      }
+
+    }
+
+    async function getResults() {
+      const response = await fetch("http://localhost:3000/results", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await response.json();
+      console.log("GET Results Success:", result);
+      alert("Cucumber: " + result.cucumber + " votes\nCactus: " + result.cactus + " votes\nI don't know: " + result.idk + " votes");
+    }
+
+    async function checkToken() {
+      const tokenInput = document.getElementById('tokenInput').value;
+      const response = await fetch("http://localhost:3000/tokens?" + new URLSearchParams({
+          token: tokenInput
+        }), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      const result = await response.json();
+      console.log("GET Token Success:", result);
+      if (result === true) {
+        const login = document.getElementById('login');
+        login.style.display = "none";
+        const vote = document.getElementById('vote');
+        vote.style.display = "block";
+      } else window.alert("Token is not valid.");
+    }
+  </script>
+
+</body>
+</html>
